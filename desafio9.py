@@ -48,6 +48,8 @@ def area_chat():
         with contenedorDelChat:
                 mostrar_historial()
 
+inicializar_estado()
+
 def generar_respuesta(chat_completo):
     respuesta_completa = ""
     for frase in chat_completo:
