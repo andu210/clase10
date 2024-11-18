@@ -13,7 +13,7 @@ if st.button("Saludar"):
     st.write(f"¡Hola, {nombre}! gracias por usar AndChat IA")
 
 def configurar_pagina():
-    st.title("AndChat IA")
+    st.title("Mi chat de IA")
     st.sidebar.title("Configuración AndChat ⚙")
     elegirModelo = st.sidebar.selectbox('Elegí un Modelo', options=MODELOS, index=0)
     return elegirModelo
@@ -22,6 +22,11 @@ def crear_usuario_groq():
     clave_secreta = st.secrets["CLAVE_API"]
     return Groq(api_key=clave_secreta)
 
+def inicializar_estado():
+    if "mensajes" not in st.session_state:
+        st.session_state.mensajes = []
+
+inicializar_estado()
 
 def actualizar_historial(rol, contenido, avatar):
         st.session_state.mensajes.append({"role": rol, "content": contenido, "avatar":avatar})
@@ -33,10 +38,6 @@ def configurar_modelo(cliente, modelo, mensaje):
       stream=True  
 )
 
-def inicializar_estado():
-    if "mensajes" not in st.session_state:
-        st.session_state.mensajes = []
-
 def mostrar_historial():
         for mensaje in st.session_state.mensajes:
                 with st.chat_message(mensaje["role"], avatar=mensaje["avatar"]):
@@ -44,11 +45,8 @@ def mostrar_historial():
 
 def area_chat():
         contenedorDelChat = st.container(height=400,border=True)
-        # Abrimos el contenedor del chat y mostramos el historial.
         with contenedorDelChat:
                 mostrar_historial()
-
-inicializar_estado()
 
 def generar_respuesta(chat_completo):
     respuesta_completa = ""
@@ -61,9 +59,10 @@ def generar_respuesta(chat_completo):
 def main(): 
     modelo = configurar_pagina()
     cliente = crear_usuario_groq()
+
     mensaje = st.chat_input("Escribí tu mensaje:")
-    
     area_chat()
+
     if mensaje:
         actualizar_historial("user", mensaje, "🙂")
         chat_completo = configurar_modelo(cliente, modelo, mensaje)
